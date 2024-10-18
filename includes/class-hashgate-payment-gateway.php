@@ -63,9 +63,7 @@ class HashGatePaymentGateway extends WC_Payment_Gateway {
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
         // Register the webhook
-        add_action( 'woocommerce_api_hashgate_gateway', function() {
-            new HashgateWebhook();
-        });
+        new HashgateWebhook();
 	}
 
 	/**
