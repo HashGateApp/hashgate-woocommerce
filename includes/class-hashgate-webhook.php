@@ -7,6 +7,7 @@ class HashgateWebhook
     public function __construct()
     {
         $this->gateway = WC()->payment_gateways->payment_gateways()[$this->name];
+
         add_action('rest_api_init', array($this, 'register_rest_routes'));
     }
 
@@ -41,7 +42,7 @@ class HashgateWebhook
                     $order->update_status('processing', __('HashGate payment was successfully processed.', 'hashgate'));
                     $order->payment_complete();
                     break;
-                case "Charge:expired":
+                case "charge:expired":
                     $order->update_status('cancelled', __('HashGate payment expired.', 'hashgate'));
                     break;
             }

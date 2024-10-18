@@ -39,7 +39,7 @@ class HashGatePaymentGateway extends WC_Payment_Gateway {
 	 */
 	public function __construct() {
 		
-		$this->icon               = apply_filters( 'woocommerce_gateway_icon', HashgatePaymentsPlugin::plugin_abspath() . '\assets\images\logo.png', 'hashgate');
+		$this->icon               = apply_filters( 'hashgate_icon', HashgatePaymentsPlugin::plugin_abspath() . '\assets\images\logo.png', 'hashgate');
 		$this->has_fields         = true;
 		$this->supports           = array(
 			'products'
@@ -61,6 +61,11 @@ class HashGatePaymentGateway extends WC_Payment_Gateway {
 
 		// Actions.
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+
+        // Register the webhook
+        add_action( 'woocommerce_api_hashgate_gateway', function() {
+            new HashgateWebhook();
+        });
 	}
 
 	/**
@@ -106,7 +111,30 @@ class HashGatePaymentGateway extends WC_Payment_Gateway {
 		);
 	}
 
-	/**
+
+    public function process_admin_options() {
+        parent::process_admin_options();
+        $error = false;
+
+        if(empty($_POST['woocommerce_hashgate_personal_access_token'])) {
+            $error = true;
+            WC_Admin_Settings::add_error( 'You must include a personal access token for HashGate Payments to work.' );
+        }
+
+        if(empty($_POST['woocommerce_hashgate_webhook_secret'])) {
+            $error = true;
+            WC_Admin_Settings::add_error( 'Provide your webhook secret so HashGate Payments can update your processed orders.' );
+        }
+
+        return $error;
+    }
+
+    public function is_available()
+    {
+        return parent::is_available() && !empty($this->personal_access_token) && !empty($this->webhook_secret);
+    }
+
+    /**
 	 * Process the payment and return the result.
 	 *
 	 * @param  int  $order_id
@@ -170,3 +198,11 @@ class HashGatePaymentGateway extends WC_Payment_Gateway {
 	}
 
 }
+
+
+add_filter( 'woocommerce_payment_gateways', function ($gateways) {
+    // Register our gateway
+    $gateways[] = "HashGatePaymentGateway";
+
+    return $gateways;
+});
