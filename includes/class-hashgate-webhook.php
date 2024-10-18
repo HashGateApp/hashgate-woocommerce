@@ -6,13 +6,13 @@ class HashgateWebhook
     protected $name = 'hashgate';
     public function __construct()
     {
-        $this->gateway = WC()->payment_gateways->payment_gateways()[$this->name];
-
         add_action('rest_api_init', array($this, 'register_rest_routes'));
     }
 
     public function register_rest_routes()
     {
+        $this->gateway = WC()->payment_gateways->payment_gateways()[$this->name];
+
         register_rest_route('hashgate/v1', '/callback', array(
             'methods' => 'POST',
             'callback' => array($this, 'process_webhook'),
