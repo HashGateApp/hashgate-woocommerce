@@ -3,7 +3,7 @@
  * Plugin Name: HashGate Payments
  * Plugin URI: https://github.com/HashGateApp/hashgate-woocommerce
  * Description: Adds the option to accept payment with HashGate
- * Version: 2.1.0
+ * Version: 2.1.1
  *
  * Author: HashGate
  * Author URI: https://hashgate.app/
